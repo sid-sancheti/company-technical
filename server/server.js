@@ -5,6 +5,7 @@ const path = require('path');
 const helmet = require('helmet'); // For security. Sets HTTP heads that improve security.
 const rateLimit = require('express-rate-limit'); // Limits the number of requests a client can make.
 require("dotenv").config();
+const cveRoutes = require("./routes/cveRoutes");
 
 const connectDB = require("./config/db");
 const { fetchAndStoreCves } = require("./controllers/cveController");
@@ -43,9 +44,8 @@ app.use(limiter);
 // Connects to MongoDB
 connectDB();
 
-app.get("/", (req, res) => {
-    res.send("Hello, MERN!");
-});
+app.use('/api/cves', cveRoutes); // Mount the router at /api/cves
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

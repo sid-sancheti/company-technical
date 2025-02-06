@@ -67,9 +67,27 @@ const getCveById = async (cveId) => {
 };
 
 /**
+ * Sets the number of results to display per page.
+ *
+ * @param {Express.Request} req - The request object.
+ * @param {Express.Response} res - The response object.
+ */
+const setResultsPerPage = async (req, res) => {
+  try {
+    const newResultsPerPage = req.body.resultsPerPage; // Access the new value from the request body
+    resultsPerPage = newResultsPerPage; // Update the `resultsPerPage` variable
+    console.log("Results per page updated to:", resultsPerPage);
+    res.json({ message: "Results per page updated successfully" }); // Send a success response
+  } catch (error) {
+    console.error("Error setting results per page:", error);
+    res.status(500).json({ message: "Error setting results per page" }); // Send an error response
+  }
+};
+
+/**
  * Checks the database to see if it is empty.
  * Used to determine if the database needs to be populated with data.
- * 
+ *
  * @returns {boolean} True if the database is empty, false otherwise
  */
 const checkDatabaseEmpty = async () => {

@@ -25,16 +25,15 @@ let resultsPerPage = 10;
  */
 const setResultsPerPage = async (req, res) => {
   try {
-    const newResultsPerPage = req.body.resultsPerPage;
-    resultsPerPage = newResultsPerPage;
-    console.log("Results per page updated to:", resultsPerPage);
-    res.json({ message: "Results per page updated successfully" });
+    const newResultsPerPage = req.body.resultsPerPage; // Correctly access the value from req.body
+    resultsPerPage = newResultsPerPage; // Update the variable
+    console.log('Results per page updated to:', resultsPerPage);
+    res.json({ message: 'Results per page updated successfully' });
   } catch (error) {
-    console.error("Error setting results per page:", error);
-    res.status(500).json({ message: "Error setting results per page" });
+    console.error('Error setting results per page:', error);
+    res.status(500).json({ message: 'Error setting results per page' });
   }
 };
-
 
 // Function to simulate a sleep/delay
 function sleep(ms) {
