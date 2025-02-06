@@ -12,15 +12,14 @@ function MyDropdown() {
   };
 
   return (
-    <div>
+    <div className="dropdown">
       {/* Create the dropdown menu that controls the number of results per page. */}
-      <label htmlFor="number-select">Select a number:</label>
+      <label htmlFor="number-select"><strong>Rows per page: </strong></label>
       <select id="number-select" value={selectedValue} onChange={handleChange}>
         <option value={10}>10</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
       </select>
-      <p>Selected value: {selectedValue}</p>
     </div>
   );
 }

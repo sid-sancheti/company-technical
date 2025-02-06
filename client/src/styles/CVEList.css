@@ -12,6 +12,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
+  height: 80vh; /* Remove this first to adjust cell height */
 }
 
 th, td {
