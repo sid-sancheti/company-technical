@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/CVEList.css';
 
-function Table() {
+function CVEList() {
   return (
     <div className="App">
     <header className="App-header">
@@ -39,4 +39,4 @@ function Table() {
   );
 }
 
-export default Table;
+export default CVEList;
