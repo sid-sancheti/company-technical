@@ -22,6 +22,7 @@ const fetchCveData = async (startIndex, resultsPerPage) => {
 };
 
 // Transform and save CVE data to MongoDB
+// TODO: Configure my MongoDB data
 const transformAndSaveCveData = async (cveItems) => {
   try {
     const transformedCves = cveItems.map((cve) => ({
@@ -65,9 +66,26 @@ const getCveById = async (cveId) => {
   }
 };
 
+/**
+ * Checks the database to see if it is empty.
+ * Used to determine if the database needs to be populated with data.
+ * 
+ * @returns {boolean} True if the database is empty, false otherwise
+ */
+const checkDatabaseEmpty = async () => {
+  try {
+    const count = await Cve.countDocuments();
+    return count === 0;
+  } catch (error) {
+    console.error("Error checking database:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   fetchCveData,
   transformAndSaveCveData,
   getAllCves,
   getCveById,
+  checkDatabaseEmpty,
 };
