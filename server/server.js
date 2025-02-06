@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require('path');
 const helmet = require('helmet'); // For security. Sets HTTP heads that improve security.
+const rateLimit = require('express-rate-limit'); // Limits the number of requests a client can make.
 require("dotenv").config();
+
+const connectDB = require("./config/db");
 
 const app = express();
 app.use(helmet());
@@ -24,8 +27,20 @@ app.use(
 
 app.disable('x-powered-by'); // Disable the X-Powered-By header. Hide information about the server
 
-mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+/*
+ * Security: Rate limiting to prevent DDoS attacks.
+ */
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+app.use(limiter);
+
+// Connects to MongoDB
+connectDB();
 
 app.get("/", (req, res) => {
     res.send("Hello, MERN!");
