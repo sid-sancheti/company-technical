@@ -1,3 +1,9 @@
+/**
+ * Controller for handling CVE-related API requests.
+ * 
+ * @author Sid Sancheti
+ */
+
 const {
   fetchCveData,
   transformAndSaveCveData,
@@ -5,11 +11,22 @@ const {
   getCveById,
 } = require("../services/cveService");
 
-let resultsPerPage = 10; // Default value
+/**
+ * The number of results to display per page.
+ * Default value is 10.
+ */
+let resultsPerPage = 10;
+
+/**
+ * Sets the number of results to display per page.
+ * 
+ * @param {Express.Request} req - The request object.
+ * @param {Express.Response} res - The response object.
+ */
 const setResultsPerPage = async (req, res) => {
   try {
     const newResultsPerPage = req.body.resultsPerPage;
-    resultsPerPage = newResultsPerPage; // Update the variable
+    resultsPerPage = newResultsPerPage;
     console.log("Results per page updated to:", resultsPerPage);
     res.json({ message: "Results per page updated successfully" });
   } catch (error) {
@@ -18,7 +35,9 @@ const setResultsPerPage = async (req, res) => {
   }
 };
 
-// Controller to fetch and store CVEs from the NVD API
+/**
+ * Fetches and stores CVEs from the NVD API.
+ */
 const fetchAndStoreCves = async () => {
   try {
     let startIndex = 0;
@@ -41,7 +60,12 @@ const fetchAndStoreCves = async () => {
   }
 };
 
-// Controller to get all CVEs (with pagination, filtering, sorting)
+/**
+ * Gets all CVEs with optional pagination, filtering, and sorting.
+ * 
+ * @param {Express.Request} req - The request object.
+ * @param {Express.Response} res - The response object.
+ */
 const getCves = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -57,7 +81,12 @@ const getCves = async (req, res) => {
   }
 };
 
-// Controller to get a single CVE by ID
+/**
+ * Gets a single CVE by ID.
+ * 
+ * @param {Express.Request} req - The request object.
+ * @param {Express.Response} res - The response object.
+ */
 const getCve = async (req, res) => {
   try {
     const cveId = req.params.id;
