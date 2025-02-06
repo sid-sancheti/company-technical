@@ -6,7 +6,11 @@ const Cve = require('../models/Cve');
 // Fetch CVE data from the NVD API
 const fetchCveData = async (startIndex, resultsPerPage) => {
     try {
-        const response = await axios.get(`https://services.nvd.nist.gov/rest/json/cves/2.0?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`);
+        const response = await axios.get(`https://services.nvd.nist.gov/rest/json/cves/2.0?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`, {
+            headers: {
+                'apiKey': process.env.NVD_API_KEY
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('Error fetching CVE data:', error);
