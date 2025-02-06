@@ -18,6 +18,7 @@ function CVEList() {
             <th>Status</th>
           </tr>
         </thead>
+        {/* The number of rows is controlled by the dropdown menu and the passed data. */}
         <tbody>
           <tr>
             <td>Data 1</td>
