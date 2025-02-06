@@ -1,40 +1,95 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const cveSchema = new mongoose.Schema({
   cveId: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
-  description: {
-    type: String
+  sourceIdentifier: {
+    type: String,
   },
-  publishedDate: {
-    type: Date
+  published: {
+    type: Date,
   },
-  lastModifiedDate: {
-    type: Date
+  lastModified: {
+    type: Date,
   },
-  cveScore: {
-    v2: {
-      baseScore: Number,
-      vectorString: String
-    },
-    v3: {
-      baseScore: Number,
-      vectorString: String
-    }
+  vulnStatus: {
+    type: String,
   },
-  cpe: [
+  descriptions: [
     {
-      criteria: String,
-      matchCriteriaId: String,
-      vulnerable: Boolean
-    }
+      lang: String,
+      value: String,
+    },
+  ],
+  metrics: {
+    cvssMetricV2: [
+      {
+        source: String,
+        type: String,
+        cvssData: {
+          version: String,
+          vectorString: String,
+          baseScore: Number,
+          accessVector: String,
+          accessComplexity: String,
+          authentication: String,
+          confidentialityImpact: String,
+          integrityImpact: String,
+          availabilityImpact: String,
+        },
+        baseSeverity: String,
+        exploitabilityScore: Number,
+        impactScore: Number,
+        acInsufInfo: Boolean,
+        obtainAllPrivilege: Boolean,
+        obtainUserPrivilege: Boolean,
+        obtainOtherPrivilege: Boolean,
+        userInteractionRequired: Boolean,
+      },
+    ],
+  },
+  weaknesses: [
+    {
+      source: String,
+      type: String,
+      description: [
+        {
+          lang: String,
+          value: String,
+        },
+      ],
+    },
+  ],
+  configurations: [
+    {
+      nodes: [
+        {
+          operator: String,
+          negate: Boolean,
+          cpeMatch: [
+            {
+              vulnerable: Boolean,
+              criteria: String,
+              matchCriteriaId: String,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  references: [
+    {
+      url: String,
+      source: String,
+    },
   ],
 });
 
-
-const Cve = mongoose.model('Cve', cveSchema);
+cveSchema.plugin(mongoosePaginate);
+const Cve = mongoose.model("Cve", cveSchema);
 
 module.exports = Cve;
