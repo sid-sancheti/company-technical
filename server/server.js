@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit'); // Limits the number of request
 require("dotenv").config();
 
 const connectDB = require("./config/db");
+const { fetchAndStoreCves } = require("./controllers/cveController");
 
 const app = express();
 app.use(helmet());
