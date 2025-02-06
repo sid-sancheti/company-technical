@@ -1,13 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../styles/CVEList.css";
 
 function CVEList() {
+  const [cves, setCves] = useState();
+  const [totalCves, setTotalCves] = useState(0);
+  const [resultsPerPage, setResultsPerPage] = useState(10); // Initialize with default value
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCves = async () => {
+      try {
+        const response = await axios.get("/api/cves"); // Fetch CVEs from your backend API
+        setCves(response.data.docs); // Update state with fetched CVEs
+        setTotalCves(response.data.totalDocs); // Update total CVEs count
+        setResultsPerPage(response.data.limit); // Update resultsPerPage from the response
+      } catch (error) {
+        console.error("Error fetching CVEs:", error);
+      }
+    };
+
+    fetchCves();
+  },); // Empty dependency array ensures this runs only once on component mount
+
+  const handleRowClick = (cveId) => {
+    navigate(`/cves/${cveId}`); // Navigate to the CVE details page
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h1 className="App-h1">CVE LIST</h1>
       </header>
-      <p>Total Records: 1234</p>
+      <p>Total Records: {totalCves}</p> {/* Display total records */}
       <table>
         <thead>
           <tr>
@@ -18,22 +44,16 @@ function CVEList() {
             <th>Status</th>
           </tr>
         </thead>
-        {/* The number of rows is controlled by the dropdown menu and the passed data. */}
         <tbody>
-          <tr>
-            <td>Data 1</td>
-            <td>Data 2</td>
-            <td>Data 3</td>
-            <td>Data 3</td>
-            <td>Data 3</td>
-          </tr>
-          <tr>
-            <td>Data 4</td>
-            <td>Data 5</td>
-            <td>Data 6</td>
-            <td>Data 3</td>
-            <td>Data 3</td>
-          </tr>
+          {cves.map((cve) => (
+            <tr key={cve.cveId} onClick={() => handleRowClick(cve.cveId)}>
+              <td>{cve.cveId}</td>
+              <td>{cve.sourceIdentifier}</td>
+              <td>{new Date(cve.published).toLocaleDateString()}</td>
+              <td>{new Date(cve.lastModified).toLocaleDateString()}</td>
+              <td>{cve.vulnStatus}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
