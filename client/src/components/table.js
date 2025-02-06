@@ -1,13 +1,16 @@
 import React from 'react';
+import '../styles/table.css';
 
 function Table() {
   return (
     <table>
       <thead>
         <tr>
-          <th>Header 1</th>
-          <th>Header 2</th>
-          <th>Header 3</th>
+          <th>CVE ID</th>
+          <th>Identifier</th>
+          <th>Published Date</th>
+          <th>Last Modified Date</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
