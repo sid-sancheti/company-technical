@@ -79,5 +79,4 @@ module.exports = {
   getCves,
   getCve,
   setResultsPerPage,
-  connectDB,
 };
