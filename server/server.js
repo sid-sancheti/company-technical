@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require('path');
 const helmet = require('helmet'); // For security. Sets HTTP heads that improve security.
@@ -8,7 +7,6 @@ require("dotenv").config();
 const cveRoutes = require("./routes/cveRoutes");
 
 const connectDB = require("./config/db");
-const { fetchAndStoreCves } = require("./controllers/cveController");
 
 const app = express();
 app.use(helmet());

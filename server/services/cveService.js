@@ -106,4 +106,5 @@ module.exports = {
   getAllCves,
   getCveById,
   checkDatabaseEmpty,
+  setResultsPerPage,
 };
