@@ -6,7 +6,8 @@ function Table() {
     <div className="App">
     <header className="App-header">
       <h1 className="App-h1">CVE LIST</h1>
-      <p>Total Records: 1234</p>
+    </header>
+    <p>Total Records: 1234</p>
     <table>
       <thead>
         <tr>
@@ -22,15 +23,18 @@ function Table() {
           <td>Data 1</td>
           <td>Data 2</td>
           <td>Data 3</td>
+          <td>Data 3</td>
+          <td>Data 3</td>
         </tr>
         <tr>
           <td>Data 4</td>
           <td>Data 5</td>
           <td>Data 6</td>
+          <td>Data 3</td>
+          <td>Data 3</td>
         </tr>
       </tbody>
     </table>
-    </header>
     </div>
   );
 }
