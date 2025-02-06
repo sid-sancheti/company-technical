@@ -2,19 +2,36 @@
  * This component houses the results-per-page drop-down menu. This will affect the pagination
  * and the table view.
  */
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function MyDropdown() {
-  const [selectedValue, setSelectedValue] = useState(10); // Default value
+  const [selectedValue, setSelectedValue] = useState(10);
 
   const handleChange = (event) => {
-    setSelectedValue(parseInt(event.target.value, 10)); // Update state
+    setSelectedValue(parseInt(event.target.value, 10));
   };
+
+  useEffect(() => {
+    const sendSelectedValue = async () => {
+      try {
+        await axios.post("/api/cves/set-results-per-page", {
+          resultsPerPage: selectedValue,
+        });
+      } catch (error) {
+        console.error("Error sending selected value:", error);
+      }
+    };
+
+    sendSelectedValue();
+  }, [selectedValue]); // Run this effect whenever selectedValue changes
 
   return (
     <div className="dropdown">
-      {/* Create the dropdown menu that controls the number of results per page. */}
-      <label htmlFor="number-select"><strong>Rows per page: </strong></label>
+      <label htmlFor="number-select">
+        <strong>Rows per page: </strong>
+      </label>
       <select id="number-select" value={selectedValue} onChange={handleChange}>
         <option value={10}>10</option>
         <option value={50}>50</option>

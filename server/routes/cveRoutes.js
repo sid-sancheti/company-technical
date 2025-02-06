@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const cveService = require('../services/cveService');
 const { query, validationResult } = require('express-validator');
+const { 
+    cveService, 
+    setResultsPerPage,
+} = require('../services/cveService');
+
 
 // Search CVEs - with input validation
 router.get('/search', [
@@ -38,4 +42,6 @@ router.get('/', [
         res.status(500).json({ message: 'Internal server error', error: error.message }); // Send error message
     }
 });
+
+router.post('/set-results-per-page', setResultsPerPage);
 module.exports = router;
