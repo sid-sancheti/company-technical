@@ -1,4 +1,8 @@
-// Connects to MongoDB
+/**
+ * Is responsbile for forming the connection to the MongoDB database.
+ * 
+ * @author Sid Sancheti
+ */
 
 const mongoose = require('mongoose');
 
