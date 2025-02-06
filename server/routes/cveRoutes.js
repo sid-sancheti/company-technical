@@ -4,6 +4,7 @@ const { query, validationResult } = require('express-validator');
 const { 
     cveService, 
     setResultsPerPage,
+    checkDatabaseEmpty,
 } = require('../services/cveService');
 
 
