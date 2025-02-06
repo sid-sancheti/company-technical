@@ -3,6 +3,10 @@ import '../styles/table.css';
 
 function Table() {
   return (
+    <div className="App">
+    <header className="App-header">
+      <h1 className="App-h1">CVE LIST</h1>
+      <p>Total Records: 1234</p>
     <table>
       <thead>
         <tr>
@@ -26,6 +30,8 @@ function Table() {
         </tr>
       </tbody>
     </table>
+    </header>
+    </div>
   );
 }
 
