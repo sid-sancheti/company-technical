@@ -3,7 +3,7 @@ const {
   transformAndSaveCveData,
   getAllCves,
   getCveById,
-} = require("../services/cveServices");
+} = require("../services/cveService");
 
 let resultsPerPage = 10; // Default value
 const setResultsPerPage = async (req, res) => {
@@ -79,4 +79,5 @@ module.exports = {
   getCves,
   getCve,
   setResultsPerPage,
+  connectDB,
 };

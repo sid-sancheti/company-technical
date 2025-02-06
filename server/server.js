@@ -50,12 +50,10 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-const buildPath = path.join(__dirname, 'build'); // Replace with the actual path to build directory
+// const buildPath = path.join(__dirname, 'build');
 
-app.use('/cves', express.static(buildPath));
+// app.use('/cves', express.static(buildPath));
 
 app.get('/cves/*', (req, res) => {
   res.sendFile(path.join(buildPath, 'index.html'));
 });
-
-// ... other server code ...
