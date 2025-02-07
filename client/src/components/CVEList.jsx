@@ -24,7 +24,7 @@ function CVEList() {
   useEffect(() => {
     const fetchCves = async () => {
       try {
-        const response = await axios.get("/api/cves", {
+        const response = await axios.get("/api/cves/", {
           params: {
             limit: resultsPerPage, // Send resultsPerPage as a query parameter
             page: currentPage, // Send currentPage as a query parameter
@@ -40,6 +40,7 @@ function CVEList() {
     fetchCves();
   }, [resultsPerPage, currentPage]); // Add resultsPerPage and currentPage to dependency array
 
+  // TODO: Setup the connections to the cveId page
   const handleRowClick = (cveId) => {
     navigate(`/cves/${cveId}`);
   };
@@ -47,6 +48,11 @@ function CVEList() {
   const handleResultsPerPageChange = (event) => {
     setResultsPerPage(parseInt(event.target.value, 10)); // Parse value as integer
     setCurrentPage(1); // Reset to first page when results per page changes
+
+    // Send that value to the server
+    axios.post("/api/cves/set-results-per-page", {
+      resultsPerPage: parseInt(event.target.value, 10),
+    });
   };
 
   const handlePageChange = (pageNumber) => {

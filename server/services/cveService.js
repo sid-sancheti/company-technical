@@ -1,4 +1,8 @@
-// services/cveServices.js
+/**
+ * Interfaces with the MongoDB collection to retrieve CVE data.
+ * 
+ * @author Sid Sancheti
+ */
 
 const axios = require("axios");
 const Cve = require("../models/Cve");

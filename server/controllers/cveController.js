@@ -42,6 +42,12 @@ function sleep(ms) {
 const fetchAndStoreCves = async () => {
   let startIndex = 0;
   let totalResults = null;
+
+  const MONGO_URI = process.env.MONGODB_URI;
+  const DB_NAME = process.env.DB_NAME;
+  const COLLECTION_NAME = process.env.COLLECTION_NAME;
+  const API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0/";
+
   try {
     // Connect to MongoDB
     const client = new MongoClient(MONGO_URI);
@@ -62,10 +68,10 @@ const fetchAndStoreCves = async () => {
         totalResults: newTotal,
       } = response.data;
 
-      if (totalResults === null) totalResults = newTotal;
-      console.log(
-        `📊 Total CVEs: ${totalResults} | Downloading ${resultsPerPage} records...`
-      );
+      if (totalResults === null) {
+        totalResults = newTotal;
+        console.log(`📊 Total CVEs: ${totalResults} | Downloading ${resultsPerPage} records...`);
+      }
 
       // Process and insert data into MongoDB
       const documents = vulnerabilities.map((v) => ({
