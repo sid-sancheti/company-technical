@@ -94,6 +94,8 @@ cveSchema.plugin(mongoosePaginate);
 
 /**
  * Helper function to find a CVE by its ID.
+ * Note: The findOne method is defined by MongoDB and Mongoose.
+ * 
  * @param {string} cveId - The CVE ID to search for.
  * @returns {Promise<Object|null>} - The found CVE document or null if not found.
  */

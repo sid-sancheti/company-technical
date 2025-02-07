@@ -69,7 +69,7 @@ const getAllCves = async (page = 1, limit = 10, filter = {}, sort = {}) => {
 };
 
 /**
- * Retrieves a single CVE by its ID.
+ * Retrieves a single CVE by its unique cveId.
  * @param {string} cveId - The CVE ID (e.g., "CVE-1999-0095").
  * @returns {Promise<Object|null>} - The CVE document, or null if not found.
  */
