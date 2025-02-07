@@ -43,13 +43,19 @@ router.get(
   }
 );
 
-//Get all CVEs with validation
+/**
+ * Get all CVEs with optional pagination.
+ * 
+ */
 router.get(
   "/",
   [
-    query("limit").optional().isInt({ min: 1, max: 100 }).toInt(), // Limit between 1-100
+    query("limit").optional().isInt({ min: 10, max: 500 }).toInt(), // Limit between 10-500
     query("page").optional().isInt({ min: 1 }).toInt(), // Page must be >= 1
-  ],
+		// query("filter").optional().isString().escape(),									// When we want to get the first n rows filtered by a value.
+		// query("sort").optional().isString().escape(),		  							// When we want to sort the results by a value.
+		// query("ascending").optional().isBoolean().toBoolean()						// When we want to sort the results in ascending order.
+	],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -61,6 +67,9 @@ router.get(
       // Extract pagination params
       const limit = req.query.limit || 10; // Default: 10
       const page = req.query.page || 1; // Default: 1
+			// const filter = req.query.filter || {}; // Default: empty object
+			// const sort = req.query.sort || {}; // Default: empty object
+			// const ascending = req.query.ascending || true; // Default: true
       const skip = (page - 1) * limit; // Calculate offset
 
       // Fetch paginated CVEs from MongoDB

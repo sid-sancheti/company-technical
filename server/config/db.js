@@ -7,15 +7,13 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const dbName = process.env.DB_NAME;
-const collectionName = project.env.COLLECTION_NAME;
-
 const connectDB = async () => {
   try {
-    const client = new MongoClient(process.env.MONGODB_URI);
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
+    const uri = process.env.MONGODB_URI;
+    const client = await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
   } catch (error) {
     console.error(`Error: ${error.message}`);
