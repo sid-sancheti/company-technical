@@ -1,6 +1,6 @@
-import React from 'react';
-import {Routes, Route, Navigate } from 'react-router-dom';
-import MainPage from './pages/MainPage';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import MainPage from "./pages/MainPage";
 
 function App() {
   return (
@@ -8,7 +8,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/cves/lists" replace />} />
         <Route path="/list" element={<MainPage />} />
-        <Route path="*" element={<Navigate to="/list" />} /> {/* Need to change: Defaults all other pages to /cves/list/ */}
+        <Route path="*" element={<Navigate to="/list" />} />{" "}
+        {/* Need to change: Defaults all other pages to /cves/list/ */}
       </Routes>
     </div>
   );

@@ -4,10 +4,7 @@
  * @author Sid Sancheti
  */
 
-const {
-  getAllCves,
-  getCveById,
-} = require("../services/cveService");
+const { getAllCves, getCveById } = require("../services/cveService");
 
 /**
  * The number of results to display per page.
@@ -25,17 +22,17 @@ const setResultsPerPage = async (req, res) => {
   try {
     const newResultsPerPage = req.body.resultsPerPage; // Correctly access the value from req.body
     resultsPerPage = newResultsPerPage; // Update the variable
-    console.log('Results per page updated to:', resultsPerPage);
-    res.json({ message: 'Results per page updated successfully' });
+    console.log("Results per page updated to:", resultsPerPage);
+    res.json({ message: "Results per page updated successfully" });
   } catch (error) {
-    console.error('Error setting results per page:', error);
-    res.status(500).json({ message: 'Error setting results per page' });
+    console.error("Error setting results per page:", error);
+    res.status(500).json({ message: "Error setting results per page" });
   }
 };
 
 // Function to simulate a sleep/delay
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -77,7 +74,6 @@ const fetchAndStoreCves = async () => {
 
       // Program sleeps to adhere to NVD api's best practices for time between calls.
       await sleep(6000);
-
     } while (startIndex < totalResults);
 
     console.log("CVE data fetched and stored successfully!");
