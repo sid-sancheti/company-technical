@@ -5,7 +5,7 @@ import "../styles/CVEList.css";
 
 /**
  * Returns a table of CVEs with the specified page number and results per page.
- * 
+ *
  * @returns A table of CVEs with the following columns:
  * - CVE ID
  * - Identifier
@@ -27,7 +27,7 @@ function CVEList() {
         const response = await axios.get("/api/cves", {
           params: {
             limit: resultsPerPage, // Send resultsPerPage as a query parameter
-            page: currentPage,       // Send currentPage as a query parameter
+            page: currentPage, // Send currentPage as a query parameter
           },
         });
         setCves(response.data.docs);
@@ -50,7 +50,7 @@ function CVEList() {
   };
 
   const handlePageChange = (pageNumber) => {
-      setCurrentPage(pageNumber);
+    setCurrentPage(pageNumber);
   };
 
   const totalPages = Math.ceil(totalCves / resultsPerPage);
@@ -99,17 +99,24 @@ function CVEList() {
         </tbody>
       </table>
 
-        {/* Pagination */}
-        <div>
-            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                Previous
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                Next
-            </button>
-        </div>
-
+      {/* Pagination */}
+      <div>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
