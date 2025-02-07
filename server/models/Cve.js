@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const mongoosePaginate = require("mongoose-paginate-v2");
+require("dotenv").config();
 
 const cveSchema = new mongoose.Schema({
   cveId: {
@@ -90,6 +91,56 @@ const cveSchema = new mongoose.Schema({
 });
 
 cveSchema.plugin(mongoosePaginate);
-const Cve = mongoose.model("Cve", cveSchema);
+
+/**
+ * Helper function to find a CVE by its ID.
+ * @param {string} cveId - The CVE ID to search for.
+ * @returns {Promise<Object|null>} - The found CVE document or null if not found.
+ */
+cveSchema.statics.findByCveId = async function (cveId) {
+  return await this.findOne({ cveId });
+};
+
+/**
+* Retrieves the most recent CVEs based on the published date.
+* @param {number} limit - Number of CVEs to retrieve.
+* @returns {Promise<Array>} - List of recent CVEs.
+*/
+cveSchema.statics.getRecentCves = async function (limit = 10) {
+  return await this.find().sort({ published: -1 }).limit(limit);
+};
+
+/**
+* Searches CVEs based on a keyword in the description.
+* @param {string} keyword - The keyword to search for.
+* @param {number} limit - The number of results to return.
+* @returns {Promise<Array>} - List of matching CVEs.
+*/
+cveSchema.statics.searchCvesByKeyword = async function (keyword, limit = 10) {
+  return await this.find({
+      "descriptions.value": { $regex: keyword, $options: "i" },
+  }).limit(limit);
+};
+
+/**
+* Deletes a CVE by its ID.
+* @param {string} cveId - The CVE ID to delete.
+* @returns {Promise<Object|null>} - The deleted CVE document or null if not found.
+*/
+cveSchema.statics.deleteCveById = async function (cveId) {
+  return await this.findOneAndDelete({ cveId });
+};
+
+/**
+* Updates a CVE by its ID.
+* @param {string} cveId - The CVE ID to update.
+* @param {Object} updateData - The data to update.
+* @returns {Promise<Object|null>} - The updated CVE document or null if not found.
+*/
+cveSchema.statics.updateCveById = async function (cveId, updateData) {
+  return await this.findOneAndUpdate({ cveId }, updateData, { new: true });
+};
+
+const Cve = mongoose.model("Cve", cveSchema, process.env.COLLECTION_NAME);
 
 module.exports = Cve;
