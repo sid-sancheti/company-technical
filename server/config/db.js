@@ -5,6 +5,10 @@
  */
 
 const mongoose = require("mongoose");
+require("dotenv").config();
+
+const dbName = process.env.DB_NAME;
+const collectionName = project.env.COLLECTION_NAME;
 
 const connectDB = async () => {
   try {

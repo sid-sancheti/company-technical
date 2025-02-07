@@ -47,11 +47,3 @@ app.use('/api/cves', cveRoutes); // Mount the router at /api/cves
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-// const buildPath = path.join(__dirname, 'build');
-
-// app.use('/cves', express.static(buildPath));
-
-app.get('/cves/*', (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'));
-});

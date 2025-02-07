@@ -3,6 +3,7 @@ const router = express.Router();
 const { query, validationResult } = require("express-validator");
 const { cveService, setResultsPerPage } = require("../services/cveService");
 
+// TODO: Verify this route
 // Search CVEs - with input validation
 router.get(
   "/search",

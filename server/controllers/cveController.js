@@ -20,8 +20,8 @@ let resultsPerPage = 10;
  */
 const setResultsPerPage = async (req, res) => {
   try {
-    const newResultsPerPage = req.body.resultsPerPage; // Correctly access the value from req.body
-    resultsPerPage = newResultsPerPage; // Update the variable
+    const newResultsPerPage = req.body.resultsPerPage;
+    resultsPerPage = newResultsPerPage;
     console.log("Results per page updated to:", resultsPerPage);
     res.json({ message: "Results per page updated successfully" });
   } catch (error) {
@@ -40,45 +40,63 @@ function sleep(ms) {
  * This function will "sleep" for 6 seconds to adhere to NVD API's best practices.
  */
 const fetchAndStoreCves = async () => {
+  let startIndex = 0;
+  let totalResults = null;
   try {
-    let startIndex = 0;
-    const resultsPerPage = 2000; // Adjust as needed
-    let totalResults = 0;
+    // Connect to MongoDB
+    const client = new MongoClient(MONGO_URI);
+    await client.connect();
+    console.log("✅ Connected to MongoDB");
 
-    do {
-      const response = await axios.get(
-        `https://services.nvd.nist.gov/rest/json/cves/2.0?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`
-      );
-      totalResults = response.data.totalResults;
-      const cves = response.data.vulnerabilities;
+    const db = client.db(DB_NAME);
+    const collection = db.collection(COLLECTION_NAME);
 
-      const cveDocuments = cves.map(
-        (cve) =>
-          new Cve({
-            cveId: cve.cve.id,
-            sourceIdentifier: cve.cve.sourceIdentifier,
-            published: cve.cve.published,
-            lastModified: cve.cve.lastModified,
-            vulnStatus: cve.cve.vulnStatus,
-            descriptions: cve.cve.descriptions,
-            metrics: cve.cve.metrics,
-            weaknesses: cve.cve.weaknesses,
-            configurations: cve.cve.configurations,
-            references: cve.cve.references,
-          })
+    while (totalResults === null || startIndex < totalResults) {
+      const url = `${API_URL}?startIndex=${startIndex}`;
+      console.log(`📡 Fetching data from: ${url}`);
+
+      const response = await axios.get(url);
+      const {
+        resultsPerPage,
+        vulnerabilities,
+        totalResults: newTotal,
+      } = response.data;
+
+      if (totalResults === null) totalResults = newTotal;
+      console.log(
+        `📊 Total CVEs: ${totalResults} | Downloading ${resultsPerPage} records...`
       );
 
-      await Cve.insertMany(cveDocuments, { ordered: false }); // Use ordered: false to skip errors
+      // Process and insert data into MongoDB
+      const documents = vulnerabilities.map((v) => ({
+        cveId: v.cve.id,
+        descriptions: v.cve.descriptions,
+        published: v.cve.published,
+        lastModified: v.cve.lastModified,
+        metrics: v.cve.metrics,
+        references: v.cve.references,
+      }));
 
-      startIndex += resultsPerPage;
+      // Insert into MongoDB (upsert to avoid duplicates)
+      const bulkOps = documents.map((doc) => ({
+        updateOne: {
+          filter: { cveId: doc.cveId },
+          update: { $set: doc },
+          upsert: true,
+        },
+      }));
 
-      // Program sleeps to adhere to NVD api's best practices for time between calls.
-      await sleep(6000);
-    } while (startIndex < totalResults);
+      await collection.bulkWrite(bulkOps);
+      console.log(`✅ Inserted/Updated ${documents.length} CVE records`);
 
-    console.log("CVE data fetched and stored successfully!");
+      startIndex += RESULTS_PER_PAGE;
+      setTimeout(() => {}, 6000); // 6 second delay
+    }
+
+    console.log("🎉 Data fetching complete!");
+    await client.close();
   } catch (error) {
-    console.error("Error fetching or storing CVEs:", error);
+    console.error("❌ Error fetching data:", error.message);
   }
 };
 
