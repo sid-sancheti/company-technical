@@ -6,6 +6,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
+        <Route path="/" element={<Navigate to="/cves/lists" replace />} />
         <Route path="/list" element={<MainPage />} />
         <Route path="*" element={<Navigate to="/list" />} /> {/* Need to change: Defaults all other pages to /cves/list/ */}
       </Routes>

@@ -5,8 +5,6 @@
  */
 
 const {
-  fetchCveData,
-  transformAndSaveCveData,
   getAllCves,
   getCveById,
 } = require("../services/cveService");

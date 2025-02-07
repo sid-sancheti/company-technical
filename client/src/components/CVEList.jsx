@@ -3,10 +3,20 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/CVEList.css";
 
+/**
+ * Returns a table of CVEs with the specified page number and results per page.
+ * 
+ * @returns A table of CVEs with the following columns:
+ * - CVE ID
+ * - Identifier
+ * - Published Date
+ * - Last Modified Date
+ * - Status
+ */
 function CVEList() {
-  const [cves, setCves] = useState();
-  const [totalCves, setTotalCves] = useState(0);
-  const [resultsPerPage, setResultsPerPage] = useState(10); // Initialize with default value
+  const [cves, setCves] = useState([]);                     // Initialize with empty array
+  const [totalCves, setTotalCves] = useState(0);            // Initialized to 0
+  const [resultsPerPage, setResultsPerPage] = useState(10); // Initialized to 10 because it is the default value
   const navigate = useNavigate();
 
   useEffect(() => {

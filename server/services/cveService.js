@@ -7,12 +7,7 @@ const Cve = require("../models/Cve");
 const fetchCveData = async (startIndex, resultsPerPage) => {
   try {
     const response = await axios.get(
-      `https://services.nvd.nist.gov/rest/json/cves/2.0?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`,
-      {
-        headers: {
-          apiKey: process.env.NVD_API_KEY,
-        },
-      }
+      `https://services.nvd.nist.gov/rest/json/cves/2.0?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`
     );
     return response.data;
   } catch (error) {
@@ -22,7 +17,6 @@ const fetchCveData = async (startIndex, resultsPerPage) => {
 };
 
 // Transform and save CVE data to MongoDB
-// TODO: Configure my MongoDB data
 const transformAndSaveCveData = async (cveItems) => {
   try {
     const transformedCves = cveItems.map((cve) => ({
@@ -47,7 +41,7 @@ const getAllCves = async (page = 1, limit = 10, filter = {}, sort = {}) => {
       sort: sort,
     };
 
-    const cves = await Cve.paginate(filter, options);
+    const cves = await Cve.paginate(filter, options); // Assuming you have a Cve model
     return cves;
   } catch (error) {
     console.error("Error getting all CVEs:", error);
