@@ -1,4 +1,4 @@
-# Sid Sancheti - Securin Technical Interview Solution
+# Sid Sancheti - Company Technical Interview Solution
 
 **Due Date:** Thur, Feb 6 @ 7 PM EST
 
