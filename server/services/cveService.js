@@ -16,13 +16,15 @@ const BASE_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0/";
  * @returns {Promise<Object>} - The API response data.
  */
 const fetchCveData = async (startIndex, resultsPerPage) => {
-    try {
-        const response = await axios.get(`${BASE_URL}?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching CVE data:", error);
-        throw new Error("Failed to fetch CVE data from NVD API");
-    }
+  try {
+    const response = await axios.get(
+      `${BASE_URL}?startIndex=${startIndex}&resultsPerPage=${resultsPerPage}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching CVE data:", error);
+    throw new Error("Failed to fetch CVE data from NVD API");
+  }
 };
 
 /**
@@ -31,22 +33,24 @@ const fetchCveData = async (startIndex, resultsPerPage) => {
  * @returns {Promise<void>}
  */
 const transformAndSaveCveData = async (cveItems) => {
-    try {
-        const transformedCves = cveItems.map((cve) => ({
-            cveId: cve.cve.CVE_data_meta.ID,
-            description: cve.cve.description?.description_data[0]?.value || "No description available",
-            publishedDate: cve.publishedDate,
-            lastModifiedDate: cve.lastModifiedDate,
-            severity: cve.impact?.baseMetricV3?.cvssV3?.baseSeverity || "UNKNOWN",
-            // Add more fields as needed
-        }));
+  try {
+    const transformedCves = cveItems.map((cve) => ({
+      cveId: cve.cve.CVE_data_meta.ID,
+      description:
+        cve.cve.description?.description_data[0]?.value ||
+        "No description available",
+      publishedDate: cve.publishedDate,
+      lastModifiedDate: cve.lastModifiedDate,
+      severity: cve.impact?.baseMetricV3?.cvssV3?.baseSeverity || "UNKNOWN",
+      // Add more fields as needed
+    }));
 
-        await Cve.insertMany(transformedCves, { ordered: false });
-        console.log("CVE data successfully saved to MongoDB.");
-    } catch (error) {
-        console.error("Error saving CVE data:", error);
-        throw new Error("Failed to save CVE data to database");
-    }
+    await Cve.insertMany(transformedCves, { ordered: false });
+    console.log("CVE data successfully saved to MongoDB.");
+  } catch (error) {
+    console.error("Error saving CVE data:", error);
+    throw new Error("Failed to save CVE data to database");
+  }
 };
 
 /**
@@ -58,14 +62,14 @@ const transformAndSaveCveData = async (cveItems) => {
  * @returns {Promise<Object>} - Paginated CVE data.
  */
 const getAllCves = async (page = 1, limit = 10, filter = {}, sort = {}) => {
-    try {
-        const options = { page, limit, sort };
-        const cves = await Cve.paginate(filter, options);
-        return cves;
-    } catch (error) {
-        console.error("Error retrieving CVEs:", error);
-        throw new Error("Failed to retrieve CVEs from database");
-    }
+  try {
+    const options = { page, limit, sort };
+    const cves = await Cve.paginate(filter, options);
+    return cves;
+  } catch (error) {
+    console.error("Error retrieving CVEs:", error);
+    throw new Error("Failed to retrieve CVEs from database");
+  }
 };
 
 /**
@@ -74,12 +78,12 @@ const getAllCves = async (page = 1, limit = 10, filter = {}, sort = {}) => {
  * @returns {Promise<Object|null>} - The CVE document, or null if not found.
  */
 const getCveById = async (cveId) => {
-    try {
-        return await Cve.findOne({ cveId });
-    } catch (error) {
-        console.error("Error retrieving CVE by ID:", error);
-        throw new Error("Failed to retrieve CVE");
-    }
+  try {
+    return await Cve.findOne({ cveId });
+  } catch (error) {
+    console.error("Error retrieving CVE by ID:", error);
+    throw new Error("Failed to retrieve CVE");
+  }
 };
 
 /**
@@ -87,13 +91,13 @@ const getCveById = async (cveId) => {
  * @returns {Promise<boolean>} - True if the database is empty, otherwise false.
  */
 const checkDatabaseEmpty = async () => {
-    try {
-        const count = await Cve.countDocuments();
-        return count === 0;
-    } catch (error) {
-        console.error("Error checking database:", error);
-        throw new Error("Failed to check database state");
-    }
+  try {
+    const count = await Cve.countDocuments();
+    return count === 0;
+  } catch (error) {
+    console.error("Error checking database:", error);
+    throw new Error("Failed to check database state");
+  }
 };
 
 /**
@@ -102,25 +106,29 @@ const checkDatabaseEmpty = async () => {
  * @param {Object} res - Express response object.
  */
 const setResultsPerPage = async (req, res) => {
-    try {
-        const { resultsPerPage } = req.body;
-        if (!resultsPerPage || typeof resultsPerPage !== "number" || resultsPerPage <= 0) {
-            return res.status(400).json({ message: "Invalid resultsPerPage value" });
-        }
-
-        console.log("Results per page updated to:", resultsPerPage);
-        res.json({ message: "Results per page updated successfully" });
-    } catch (error) {
-        console.error("Error updating results per page:", error);
-        res.status(500).json({ message: "Failed to update results per page" });
+  try {
+    const { resultsPerPage } = req.body;
+    if (
+      !resultsPerPage ||
+      typeof resultsPerPage !== "number" ||
+      resultsPerPage <= 0
+    ) {
+      return res.status(400).json({ message: "Invalid resultsPerPage value" });
     }
+
+    console.log("Results per page updated to:", resultsPerPage);
+    res.json({ message: "Results per page updated successfully" });
+  } catch (error) {
+    console.error("Error updating results per page:", error);
+    res.status(500).json({ message: "Failed to update results per page" });
+  }
 };
 
 module.exports = {
-    fetchCveData,
-    transformAndSaveCveData,
-    getAllCves,
-    getCveById,
-    checkDatabaseEmpty,
-    setResultsPerPage,
+  fetchCveData,
+  transformAndSaveCveData,
+  getAllCves,
+  getCveById,
+  checkDatabaseEmpty,
+  setResultsPerPage,
 };

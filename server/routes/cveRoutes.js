@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { query, validationResult } = require("express-validator");
-const { cveService, setResultsPerPage } = require("../services/cveService");
+const cveService  = require("../services/cveService");
 
 // TODO: Verify this route
 // Search CVEs - with input validation
@@ -73,7 +73,7 @@ router.get(
       const skip = (page - 1) * limit; // Calculate offset
 
       // Fetch paginated CVEs from MongoDB
-      const results = await cveService.getCvesPaginated(limit, skip);
+      const results = await cveService.getAllCves(limit, skip);
 
       res.json({
         page,
