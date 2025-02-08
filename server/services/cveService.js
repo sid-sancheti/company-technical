@@ -5,6 +5,7 @@
  */
 
 const axios = require("axios");
+const mongoose = require("mongoose");
 const Cve = require("../models/Cve"); // Import CVE Mongoose model
 
 const BASE_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0/";
@@ -52,6 +53,29 @@ const transformAndSaveCveData = async (cveItems) => {
     throw new Error("Failed to save CVE data to database");
   }
 };
+
+async function getCvesPaged(page, pageSize, filter = {}) {
+  try {
+    const skipAmount = (page - 1) * pageSize;
+
+    const cves = await Cve.find(filter).skip(skipAmount).limit(pageSize).exec();
+
+    const totalCves = await Cve.countDocuments(filter); // For total count
+
+    const totalPages = Math.ceil(totalCves / pageSize); // Calculate total pages
+
+    return {
+      cves: cves,
+      currentPage: page,
+      totalPages: totalPages,
+      totalCves: totalCves, // Include total count
+      pageSize: pageSize,
+    };
+  } catch (error) {
+    console.error("Error fetching CVEs:", error);
+    throw error; // Re-throw the error for proper handling
+  }
+}
 
 /**
  * Retrieves paginated CVEs from the database.
@@ -131,4 +155,5 @@ module.exports = {
   getCveById,
   checkDatabaseEmpty,
   setResultsPerPage,
+  getCvesPaged,
 };
