@@ -93,6 +93,7 @@ const cveSchema = new mongoose.Schema({
 
 cveSchema.plugin(mongoosePaginate);
 
+
 const Cve = mongoose.model("Cve", cveSchema, process.env.COLLECTION_NAME);
 
 export default Cve;
