@@ -17,4 +17,4 @@ async function connectToDatabase() {
   }
 }
 
-export default { mongoose, connectToDatabase };
+export { mongoose, connectToDatabase };

@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit'; // Limits the number of requests a c
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import db from './cveDB.js'; // Import the db object
+import {connectToDatabase } from './db/cveDB.js'; // Import the db object
 import cveRoutes from "./routes/cveRoutes.js";
 
 const app = express();
@@ -41,7 +41,7 @@ app.use(limiter);
 const PORT = process.env.PORT || 5000;
 
 // Connect to the database *before* starting the server
-db.connectToDatabase().then(() => {
+connectToDatabase().then(() => {
     app.use('/api/cves', cveRoutes);
 
     app.listen(PORT, () => {

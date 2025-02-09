@@ -92,7 +92,6 @@ const cveSchema = new mongoose.Schema({
 });
 
 cveSchema.plugin(mongoosePaginate);
-cveSchema.index({ cveId: 1 });
 
 const Cve = mongoose.model("Cve", cveSchema, process.env.COLLECTION_NAME);
 

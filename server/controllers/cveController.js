@@ -8,7 +8,6 @@
 
 // For some reason, the server crashes after I make another request to the api. This is an issue.
 
-import db from "../db.js";
 import Cve from "../models/Cve.js";
 
 /**
@@ -19,7 +18,6 @@ import Cve from "../models/Cve.js";
  * @author Sid Sancheti
  */
 export const getSomeCves = (req, res) => {
-  const collection = db.collection("cves");
   const itemsPerPage = parseInt(req.query.items) || 10;
   const pageNumber = parseInt(req.query.page) || 1;
 
@@ -32,7 +30,7 @@ export const getSomeCves = (req, res) => {
       if (!cves) {
         return res.status(404).json({ message: "No CVEs found" });
       }
-      res.json({ cves, page: pageNumber, itemsPerPage });
+      res.json({ cves, totalDocs: cves.length});
     })
     .catch((err) => {
       res.status(500).json({ error: err.message });
@@ -40,8 +38,6 @@ export const getSomeCves = (req, res) => {
 
   console.log(`Items per page: ${itemsPerPage}`);
   console.log(`Page number: ${pageNumber}`);
-
-  res.json({ message: "Handling get some Cves", itemsPerPage, pageNumber });
 };
 
 /**
