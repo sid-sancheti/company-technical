@@ -1,6 +1,6 @@
 # Sid Sancheti - Company Technical Interview Solution
 
-**Due Date:** Thur, Feb 6 @ 7 PM EST
+**Due Date:** Friday, Feb 7 @ 7 PM EST
 
 **Important:** When starting localhost, navigate to localhost:3000/cves/lists/ to find the table.
 
