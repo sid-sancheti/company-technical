@@ -55,67 +55,59 @@ async function populateDatabase() {
         try {
           const newCve = new Cve({
             cveId: cve.cve.id,
-            sourceIdentifier: cve.cve.sourceIdentifier, // Assuming the NVD API provides this
-            published: cve.publishedDate,
-            lastModified: cve.lastModifiedDate,
-            vulnStatus: cve.cve.vulnStatus, // Assuming the NVD API provides this
-            descriptions: cve.cve.description.description_data.map((desc) => ({
+            sourceIdentifier: cve.cve.sourceIdentifier,
+            published: cve.cve.published,
+            lastModified: cve.cve.lastModified,
+            vulnStatus: cve.cve.vulnStatus,
+            descriptions: cve.cve.descriptions.map((desc) => ({
               lang: desc.lang,
               value: desc.value,
             })),
             metrics: {
-              cvssMetricV2: cve.impact.baseMetricV2
-                ? [cve.impact.baseMetricV2].map((metric) => ({
-                    // Check if baseMetricV2 exists
-                    source: metric.source,
-                    type: metric.type,
-                    cvssData: {
-                      version: metric.cvssData.version,
-                      vectorString: metric.cvssData.vectorString,
-                      baseScore: metric.cvssData.baseScore,
-                      accessVector: metric.cvssData.accessVector,
-                      accessComplexity: metric.cvssData.accessComplexity,
-                      authentication: metric.cvssData.authentication,
-                      confidentialityImpact:
-                        metric.cvssData.confidentialityImpact,
-                      integrityImpact: metric.cvssData.integrityImpact,
-                      availabilityImpact: metric.cvssData.availabilityImpact,
-                    },
-                    baseSeverity: metric.baseSeverity,
-                    exploitabilityScore: metric.exploitabilityScore,
-                    impactScore: metric.impactScore,
-                    acInsufInfo: metric.acInsufInfo,
-                    obtainAllPrivilege: metric.obtainAllPrivilege,
-                    obtainUserPrivilege: metric.obtainUserPrivilege,
-                    obtainOtherPrivilege: metric.obtainOtherPrivilege,
-                    userInteractionRequired: metric.userInteractionRequired,
-                  }))
-                : [], // If not, provide an empty array
+              cvssMetricV2: cve.cve.metrics.cvssMetricV2.map((metric) => ({
+                source: metric.source,
+                type: metric.type,
+                cvssData: {
+                  version: metric.cvssData.version,
+                  vectorString: metric.cvssData.vectorString,
+                  baseScore: metric.cvssData.baseScore,
+                  accessVector: metric.cvssData.accessVector,
+                  accessComplexity: metric.cvssData.accessComplexity,
+                  authentication: metric.cvssData.authentication,
+                  confidentialityImpact: metric.cvssData.confidentialityImpact,
+                  integrityImpact: metric.cvssData.integrityImpact,
+                  availabilityImpact: metric.cvssData.availabilityImpact,
+                },
+                baseSeverity: metric.baseSeverity,
+                exploitabilityScore: metric.exploitabilityScore,
+                impactScore: metric.impactScore,
+                acInsufInfo: metric.acInsufInfo,
+                obtainAllPrivilege: metric.obtainAllPrivilege,
+                obtainUserPrivilege: metric.obtainUserPrivilege,
+                obtainOtherPrivilege: metric.obtainOtherPrivilege,
+                userInteractionRequired: metric.userInteractionRequired,
+              })),
             },
-            weaknesses: cve.cve.problemtype.problemtype_data.map(
-              (weakness) => ({
-                source: weakness.source,
-                type: weakness.type,
-                description: weakness.description.map((desc) => ({
-                  lang: desc.lang,
-                  value: desc.value,
-                })),
-              })
-            ),
-            configurations: cve.configurations.nodes.map((node) => ({
-              nodes: node.cpe_match.map((match) => ({
-                operator: node.operator,
-                negate: node.negate,
-                cpeMatch: [
-                  {
-                    vulnerable: match.vulnerable,
-                    criteria: match.criteria,
-                    matchCriteriaId: match.matchCriteriaId,
-                  },
-                ],
+            weaknesses: cve.cve.weaknesses.map((weakness) => ({
+              source: weakness.source,
+              type: weakness.type,
+              description: weakness.description.map((desc) => ({
+                lang: desc.lang,
+                value: desc.value,
               })),
             })),
-            references: cve.cve.references.reference_data.map((ref) => ({
+            configurations: cve.cve.configurations.map((config) => ({
+              nodes: config.nodes.map((node) => ({
+                operator: node.operator,
+                negate: node.negate,
+                cpeMatch: node.cpeMatch.map((match) => ({
+                  vulnerable: match.vulnerable,
+                  criteria: match.criteria,
+                  matchCriteriaId: match.matchCriteriaId,
+                })),
+              })),
+            })),
+            references: cve.cve.references.map((ref) => ({
               url: ref.url,
               source: ref.source,
             })),
