@@ -1,11 +1,12 @@
-import express from "express";
+import express from 'express';
 import cors from "cors";
 import mongoose from 'mongoose';
 import helmet from 'helmet'; // For security. Sets HTTP heads that improve security.
 import rateLimit from 'express-rate-limit'; // Limits the number of requests a client can make.
+import * as dotenv from "dotenv";
+dotenv.config();
 
-require("dotenv").config();
-const cveRoutes = require("./routes/cveRoutes");
+import cveRoutes from "./routes/cveRoutes";
 
 const app = express();
 app.use(helmet());
@@ -16,7 +17,6 @@ app.use(
   helmet.contentSecurityPolicy({
       directives: {
         defaultSrc: ["'self'"],  // Only allow resources from the same origin
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts (need to refactor to before deployment to prod)
         imgSrc: ["'self'", "data:"], // Allow self and data URLs
         styleSrc: ["'self'", "https://stackpath.bootstrapcdn.com"], //Add bootstrap source.
         connectSrc: ["'self'", "https://services.nvd.nist.gov"], // Allow connections NVD API
@@ -38,15 +38,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Connects to MongoDB
-
-mongoose.connect(process.env.MONGODB_URI)
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1); // Exit the process if the connection fails (important!)
-});
-
-app.use('/api/cves/', cveRoutes); // Mount the router at /api/cves
+app.use('/api/cves', cveRoutes); // Mount the router at /api/cves
 
 
 const PORT = process.env.PORT;

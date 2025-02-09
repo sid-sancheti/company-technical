@@ -145,4 +145,4 @@ cveSchema.statics.updateCveById = async function (cveId, updateData) {
 
 const Cve = mongoose.model("Cve", cveSchema, process.env.COLLECTION_NAME);
 
-module.exports = Cve;
+export default Cve;

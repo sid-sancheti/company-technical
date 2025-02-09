@@ -8,7 +8,9 @@
 import express from "express";
 const router = express.Router();
 import db from "../db/cveDB.js";
-require("dotenv").config();
+
+import * as dotenv from "dotenv";
+dotenv.config();
 
 router.get("/", async (req, res) => {
   let collection = await db.collection(process.env.COLLECTION_NAME);
