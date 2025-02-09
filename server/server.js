@@ -1,8 +1,9 @@
-const express = require("express");
-const cors = require("cors");
-const mongoose = require('mongoose');
-const helmet = require('helmet'); // For security. Sets HTTP heads that improve security.
-const rateLimit = require('express-rate-limit'); // Limits the number of requests a client can make.
+import express from "express";
+import cors from "cors";
+import mongoose from 'mongoose';
+import helmet from 'helmet'; // For security. Sets HTTP heads that improve security.
+import rateLimit from 'express-rate-limit'; // Limits the number of requests a client can make.
+
 require("dotenv").config();
 const cveRoutes = require("./routes/cveRoutes");
 
@@ -39,10 +40,7 @@ app.use(limiter);
 
 // Connects to MongoDB
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true, // Important for new MongoDB driver
-  useUnifiedTopology: true, // Important for new MongoDB driver
-})
+mongoose.connect(process.env.MONGODB_URI)
 .catch(err => {
   console.error('MongoDB connection error:', err);
   process.exit(1); // Exit the process if the connection fails (important!)

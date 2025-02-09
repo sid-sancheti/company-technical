@@ -1,5 +1,7 @@
 /**
  * Controller for handling CVE-related API requests.
+ * Acts as a bridge between the client and the business logic.
+ * Handles incoming requests, extract relavent data, and prepare a response to send back the the client.
  *
  * @author Sid Sancheti
  */
@@ -119,7 +121,7 @@ const getCves = async (req, res) => {
     const filter = req.query.filter || {}; // Implement your filtering logic here
     const sort = req.query.sort || {}; // Implement your sorting logic here
 
-    const result = await getAllCves(page, resultsPerPage, filter, sort);
+    const result = await (page, resultsPerPage, filter, sort);
     res.json(result);
   } catch (error) {
     console.error("Error getting CVEs:", error);

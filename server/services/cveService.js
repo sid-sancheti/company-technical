@@ -1,9 +1,11 @@
 /**
  * CVE Service - Handles fetching, storing, and retrieving CVE data from MongoDB and the NVD API.
+ * Business logic.
  *
  * @author Sid Sancheti
  */
 
+// I should probably get rid of this file because it seems redundant.
 const axios = require("axios");
 const mongoose = require("mongoose");
 const Cve = require("../models/Cve"); // Import CVE Mongoose model
