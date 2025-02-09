@@ -7,15 +7,20 @@
 
 import express from "express";
 const router = express.Router();
-import db from "../db/cveDB.js";
+import {
+  getSomeCves,
+  getACve,
+} from "../controllers/cveController.js";
 
 import * as dotenv from "dotenv";
 dotenv.config();
 
-router.get("/", async (req, res) => {
-  let collection = await db.collection(process.env.COLLECTION_NAME);
-  let results = await collection.find({}).toArray();
-  res.send(results).status(200);
+router.get("/", getSomeCves);
+
+router.get("/cve/:cveId", getACve);
+
+router.post("/", (req, res) => {
+
 });
 
 

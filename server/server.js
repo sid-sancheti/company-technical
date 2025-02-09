@@ -6,7 +6,7 @@ import rateLimit from 'express-rate-limit'; // Limits the number of requests a c
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import cveRoutes from "./routes/cveRoutes";
+import cveRoutes from "./routes/cveRoutes.js";
 
 const app = express();
 app.use(helmet());

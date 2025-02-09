@@ -26,8 +26,8 @@ function CVEList() {
       try {
         const response = await axios.get("/api/cves/", {
           params: {
-            limit: resultsPerPage, // Send resultsPerPage as a query parameter
-            page: currentPage, // Send currentPage as a query parameter
+            itmes: resultsPerPage,  // Send resultsPerPage as a query parameter
+            page: currentPage,      // Send currentPage as a query parameter
           },
         });
         setCves(response.data.docs);

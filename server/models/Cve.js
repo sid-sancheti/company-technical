@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
-require("dotenv").config();
+import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const cveSchema = new mongoose.Schema({
   cveId: {
