@@ -6,7 +6,7 @@
 
 This is my solution to Securin's technical exam assignment.
 
-Please note, the .env files in the frontend and backend need to be created in order for the MERN app to work properly.
+Prior to running the application, please create a .env file in the server folder. Include the the MongoDB URI under ATLAS_URI, the database name under DB_NAME, and the collection name under COLLECTION_NAME.
 
 Use two separate terminals to run the project:
 

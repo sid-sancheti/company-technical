@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from "cors";
-import mongoose from 'mongoose';
 import helmet from 'helmet'; // For security. Sets HTTP heads that improve security.
 import rateLimit from 'express-rate-limit'; // Limits the number of requests a client can make.
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import db from './cveDB.js'; // Import the db object
 import cveRoutes from "./routes/cveRoutes.js";
 
 const app = express();
@@ -38,8 +38,13 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use('/api/cves', cveRoutes); // Mount the router at /api/cves
+const PORT = process.env.PORT || 5000;
 
+// Connect to the database *before* starting the server
+db.connectToDatabase().then(() => {
+    app.use('/api/cves', cveRoutes);
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => {
+        console.log(`Server is running on port: ${PORT}`);
+    });
+});

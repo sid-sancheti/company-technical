@@ -15,13 +15,10 @@ import {
 import * as dotenv from "dotenv";
 dotenv.config();
 
+
 router.get("/", getSomeCves);
 
 router.get("/cve/:cveId", getACve);
-
-router.post("/", (req, res) => {
-
-});
 
 
 
