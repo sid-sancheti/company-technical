@@ -29,9 +29,9 @@ async function connectToDatabase() {
 
 async function populateDatabase() {
   // Get the total number of cves from the NVD API
-	let currentCveCount = 0;
-	let totalCves = 0;
-	const resultsPerCall = 1000;
+  let currentCveCount = 0;
+  let totalCves = 0;
+  const resultsPerCall = 1000;
   do {
     try {
       const response = await axios.get(
@@ -39,77 +39,87 @@ async function populateDatabase() {
         {
           params: {
             resultsPerPage: resultsPerCall,
-						startIndex: currentCveCount,
+            startIndex: currentCveCount,
           },
         }
       );
 
-			if (totalCves === 0) { totalCves = response.data.totalResults; }
+      if (totalCves === 0) {
+        totalCves = response.data.totalResults;
+      }
 
-			currentCveCount += resultsPerCall;
+      currentCveCount += resultsPerCall;
       const cves = response.data.vulnerabilities; // Assuming this is how the NVD API returns data
 
       for (const cve of cves) {
         try {
-					const newCve = new Cve({
-						cveId: cve.cve.id,
-						sourceIdentifier: cve.cve.sourceIdentifier, // Assuming the NVD API provides this
-						published: cve.publishedDate,
-						lastModified: cve.lastModifiedDate,
-						vulnStatus: cve.cve.vulnStatus, // Assuming the NVD API provides this
-						descriptions: cve.cve.description.description_data.map(desc => ({
-							lang: desc.lang,
-							value: desc.value
-						})),
-						metrics: { 
-							cvssMetricV2: cve.impact.baseMetricV2? [cve.impact.baseMetricV2].map(metric => ({ // Check if baseMetricV2 exists
-								source: metric.source,
-								type: metric.type,
-								cvssData: {
-									version: metric.cvssData.version,
-									vectorString: metric.cvssData.vectorString,
-									baseScore: metric.cvssData.baseScore,
-									accessVector: metric.cvssData.accessVector,
-									accessComplexity: metric.cvssData.accessComplexity,
-									authentication: metric.cvssData.authentication,
-									confidentialityImpact: metric.cvssData.confidentialityImpact,
-									integrityImpact: metric.cvssData.integrityImpact,
-									availabilityImpact: metric.cvssData.availabilityImpact,
-								},
-								baseSeverity: metric.baseSeverity,
-								exploitabilityScore: metric.exploitabilityScore,
-								impactScore: metric.impactScore,
-								acInsufInfo: metric.acInsufInfo,
-								obtainAllPrivilege: metric.obtainAllPrivilege,
-								obtainUserPrivilege: metric.obtainUserPrivilege,
-								obtainOtherPrivilege: metric.obtainOtherPrivilege,
-								userInteractionRequired: metric.userInteractionRequired,
-							})):, // If not, provide an empty array
-						},
-						weaknesses: cve.cve.problemtype.problemtype_data.map(weakness => ({
-							source: weakness.source,
-							type: weakness.type,
-							description: weakness.description.map(desc => ({
-								lang: desc.lang,
-								value: desc.value
-							}))
-						})),
-						configurations: cve.configurations.nodes.map(node => ({
-							nodes: node.cpe_match.map(match => ({
-								operator: node.operator,
-								negate: node.negate,
-								cpeMatch: [{
-									vulnerable: match.vulnerable,
-									criteria: match.criteria,
-									matchCriteriaId: match.matchCriteriaId,
-								}]
-							}))
-						})),
-						references: cve.cve.references.reference_data.map(ref => ({
-							url: ref.url,
-							source: ref.source,
-						})),
-					});
+          const newCve = new Cve({
+            cveId: cve.cve.id,
+            sourceIdentifier: cve.cve.sourceIdentifier, // Assuming the NVD API provides this
+            published: cve.publishedDate,
+            lastModified: cve.lastModifiedDate,
+            vulnStatus: cve.cve.vulnStatus, // Assuming the NVD API provides this
+            descriptions: cve.cve.description.description_data.map((desc) => ({
+              lang: desc.lang,
+              value: desc.value,
+            })),
+            metrics: {
+              cvssMetricV2: cve.impact.baseMetricV2
+                ? [cve.impact.baseMetricV2].map((metric) => ({
+                    // Check if baseMetricV2 exists
+                    source: metric.source,
+                    type: metric.type,
+                    cvssData: {
+                      version: metric.cvssData.version,
+                      vectorString: metric.cvssData.vectorString,
+                      baseScore: metric.cvssData.baseScore,
+                      accessVector: metric.cvssData.accessVector,
+                      accessComplexity: metric.cvssData.accessComplexity,
+                      authentication: metric.cvssData.authentication,
+                      confidentialityImpact:
+                        metric.cvssData.confidentialityImpact,
+                      integrityImpact: metric.cvssData.integrityImpact,
+                      availabilityImpact: metric.cvssData.availabilityImpact,
+                    },
+                    baseSeverity: metric.baseSeverity,
+                    exploitabilityScore: metric.exploitabilityScore,
+                    impactScore: metric.impactScore,
+                    acInsufInfo: metric.acInsufInfo,
+                    obtainAllPrivilege: metric.obtainAllPrivilege,
+                    obtainUserPrivilege: metric.obtainUserPrivilege,
+                    obtainOtherPrivilege: metric.obtainOtherPrivilege,
+                    userInteractionRequired: metric.userInteractionRequired,
+                  }))
+                : [], // If not, provide an empty array
+            },
+            weaknesses: cve.cve.problemtype.problemtype_data.map(
+              (weakness) => ({
+                source: weakness.source,
+                type: weakness.type,
+                description: weakness.description.map((desc) => ({
+                  lang: desc.lang,
+                  value: desc.value,
+                })),
+              })
+            ),
+            configurations: cve.configurations.nodes.map((node) => ({
+              nodes: node.cpe_match.map((match) => ({
+                operator: node.operator,
+                negate: node.negate,
+                cpeMatch: [
+                  {
+                    vulnerable: match.vulnerable,
+                    criteria: match.criteria,
+                    matchCriteriaId: match.matchCriteriaId,
+                  },
+                ],
+              })),
+            })),
+            references: cve.cve.references.reference_data.map((ref) => ({
+              url: ref.url,
+              source: ref.source,
+            })),
+          });
 
           await newCve.save(); // Save the CVE
           console.log(`Saved CVE: ${cve.cve.id}`);
@@ -127,8 +137,8 @@ async function populateDatabase() {
       console.error("Error fetching or saving CVEs:", error);
     }
 
-		// Sleep for 6 seconds to avoid rate limiting
-		await new Promise((resolve) => setTimeout(resolve, 6000));
+    // Sleep for 6 seconds to avoid rate limiting
+    await new Promise((resolve) => setTimeout(resolve, 6000));
   } while (currentCveCount < totalCves);
 }
 
