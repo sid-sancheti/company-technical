@@ -8,10 +8,14 @@ const URI = process.env.ATLAS_URI || "";
 
 async function connectToDatabase() {
   try {
-    await mongoose.connect(URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }, "NVD-CVE-Data");
+    await mongoose.connect(
+      URI,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+      "NVD-CVE-Data"
+    );
     console.log("Successfully connected to MongoDB!");
 
     // On startup, update the database with new data. If it is empty, fill it.
@@ -20,8 +24,8 @@ async function connectToDatabase() {
       await populateDatabase();
       console.log("Database populated with CVEs!");
     } else {
-			// Update the database rather than populating it
-		}
+      console.log("Database already contains CVEs.");
+    }
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
     process.exit(1); // Exit the process if the connection fails
@@ -51,11 +55,11 @@ async function populateDatabase() {
 
       currentCveCount += resultsPerCall;
       const cves = response.data.vulnerabilities; // Assuming this is how the NVD API returns data
-			console.log("Updating the database with new CVEs...");
+      console.log("Updating the database with new CVEs...");
 
       for (const cve of cves) {
         try {
-					console.log(`weaknesses.source: ${cve.cve.weaknesses[0].source}`);
+          console.log(`weaknesses.source: ${cve.cve.weaknesses[0].source}`);
           const newCve = new Cve({
             cveId: cve.cve.id,
             sourceIdentifier: cve.cve.sourceIdentifier,
@@ -70,35 +74,35 @@ async function populateDatabase() {
             //   cvssMetricV2: cve.cve.metrics.cvssMetricV2.map((metric) => ({
             //     source: metric.source,
             //     type: metric.type,
-                // cvssData: {
-                //   version: metric.cvssData.version,
-                //   vectorString: metric.cvssData.vectorString,
-                //   baseScore: metric.cvssData.baseScore,
-                //   accessVector: metric.cvssData.accessVector,
-                //   accessComplexity: metric.cvssData.accessComplexity,
-                //   authentication: metric.cvssData.authentication,
-                //   confidentialityImpact: metric.cvssData.confidentialityImpact,
-                //   integrityImpact: metric.cvssData.integrityImpact,
-                //   availabilityImpact: metric.cvssData.availabilityImpact,
-                // },
-                // baseSeverity: metric.baseSeverity,
-                // exploitabilityScore: metric.exploitabilityScore,
-                // impactScore: metric.impactScore,
-                // acInsufInfo: metric.acInsufInfo,
-                // obtainAllPrivilege: metric.obtainAllPrivilege,
-                // obtainUserPrivilege: metric.obtainUserPrivilege,
-                // obtainOtherPrivilege: metric.obtainOtherPrivilege,
-                // userInteractionRequired: metric.userInteractionRequired,
+            // cvssData: {
+            //   version: metric.cvssData.version,
+            //   vectorString: metric.cvssData.vectorString,
+            //   baseScore: metric.cvssData.baseScore,
+            //   accessVector: metric.cvssData.accessVector,
+            //   accessComplexity: metric.cvssData.accessComplexity,
+            //   authentication: metric.cvssData.authentication,
+            //   confidentialityImpact: metric.cvssData.confidentialityImpact,
+            //   integrityImpact: metric.cvssData.integrityImpact,
+            //   availabilityImpact: metric.cvssData.availabilityImpact,
+            // },
+            // baseSeverity: metric.baseSeverity,
+            // exploitabilityScore: metric.exploitabilityScore,
+            // impactScore: metric.impactScore,
+            // acInsufInfo: metric.acInsufInfo,
+            // obtainAllPrivilege: metric.obtainAllPrivilege,
+            // obtainUserPrivilege: metric.obtainUserPrivilege,
+            // obtainOtherPrivilege: metric.obtainOtherPrivilege,
+            // userInteractionRequired: metric.userInteractionRequired,
             //   })),
             // },
-						// weaknesses: cve.cve.weaknesses.map(weakness => ({
-						// 	source: weakness.source,
-						// 	type: weakness.type,
-							// description: weakness.description.map(desc => ({
-							// 	lang: desc.lang,
-							// 	value: desc.value,
-							// })),
-						// })),
+            // weaknesses: cve.cve.weaknesses.map(weakness => ({
+            // 	source: weakness.source,
+            // 	type: weakness.type,
+            // description: weakness.description.map(desc => ({
+            // 	lang: desc.lang,
+            // 	value: desc.value,
+            // })),
+            // })),
             configurations: cve.cve.configurations.map((config) => ({
               nodes: config.nodes.map((node) => ({
                 operator: node.operator,

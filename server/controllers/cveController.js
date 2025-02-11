@@ -66,4 +66,20 @@ export const getACve = (req, res) => {
   console.log(`Handling get a CVE with ID: ${cveId}`); // This will now log *after* the request is handled.
 };
 
+/**
+ * Finds the number of documents in the target collection.
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+export const getTotalCveCount = (req, res) => {
+  Cve.countDocuments()
+    .exec()
+    .then((count) => {
+      res.json({ count });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+};
 //TODO: Implement a method to check for duplicate cveIds and remove one.
