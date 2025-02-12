@@ -60,83 +60,10 @@ async function populateDatabase() {
       }
 
       currentCveCount += resultsPerCall;
-      const cves = response.data.vulnerabilities; // Assuming this is how the NVD API returns data
+      const cves = response.data.vulnerabilities;
       console.log("Updating the database with new CVEs...");
 
-      for (const cve of cves) {
-        try {
-          const newCve = new Cve({
-            cveId: cve.cve.id,
-            sourceIdentifier: cve.cve.sourceIdentifier,
-            published: cve.cve.published,
-            lastModified: cve.cve.lastModified,
-            vulnStatus: cve.cve.vulnStatus,
-            descriptions: cve.cve.descriptions.map((desc) => ({
-              lang: desc.lang,
-              value: desc.value,
-            })),
-            metrics: {
-              cvssMetricV2: cve.cve.metrics.cvssMetricV2.map((metric) => ({
-                source: metric.source,
-                type: metric.type,
-                cvssData: {
-                  version: metric.cvssData.version,
-                  vectorString: metric.cvssData.vectorString,
-                  baseScore: metric.cvssData.baseScore,
-                  accessVector: metric.cvssData.accessVector,
-                  accessComplexity: metric.cvssData.accessComplexity,
-                  authentication: metric.cvssData.authentication,
-                  confidentialityImpact: metric.cvssData.confidentialityImpact,
-                  integrityImpact: metric.cvssData.integrityImpact,
-                  availabilityImpact: metric.cvssData.availabilityImpact,
-                },
-                baseSeverity: metric.baseSeverity,
-                exploitabilityScore: metric.exploitabilityScore,
-                impactScore: metric.impactScore,
-                acInsufInfo: metric.acInsufInfo,
-                obtainAllPrivilege: metric.obtainAllPrivilege,
-                obtainUserPrivilege: metric.obtainUserPrivilege,
-                obtainOtherPrivilege: metric.obtainOtherPrivilege,
-                userInteractionRequired: metric.userInteractionRequired,
-              })),
-            },
-            weaknesses: cve.cve.weaknesses.map((weakness) => ({
-              source: weakness.source,
-              type: weakness.type,
-              description: weakness.description.map((desc) => ({
-                lang: desc.lang,
-                value: desc.value,
-              })),
-            })),
-            configurations: cve.cve.configurations.map((config) => ({
-              nodes: config.nodes.map((node) => ({
-                operator: node.operator,
-                negate: node.negate,
-                cpeMatch: node.cpeMatch.map((match) => ({
-                  vulnerable: match.vulnerable,
-                  criteria: match.criteria,
-                  matchCriteriaId: match.matchCriteriaId,
-                })),
-              })),
-            })),
-            references: cve.cve.references.map((ref) => ({
-              url: ref.url,
-              source: ref.source,
-            })),
-          });
-
-          await newCve.save(); // Save the CVE
-          console.log(`Saved CVE: ${cve.cve.id}`);
-        } catch (error) {
-          if (error.code === 11000 && error.keyPattern.cveId === 1) {
-            console.warn(`Duplicate CVE found: ${cve.cve.id}, skipping...`);
-            // You can update the existing CVE here if needed instead of skipping
-          } else {
-            console.error(`Error saving CVE ${cve.cve.id}:`, error);
-            // Handle other errors (e.g., validation errors, connection errors)
-          }
-        }
-      }
+      insertCves(cves);
     } catch (error) {
       console.error("Error fetching or saving CVEs:", error);
     }
@@ -144,6 +71,79 @@ async function populateDatabase() {
     // Sleep for 6 seconds to avoid rate limiting
     await new Promise((resolve) => setTimeout(resolve, 6000));
   } while (currentCveCount < totalCves);
+
+  console.log("Database updated with new CVEs!");
+}
+
+async function insertCves(cves) {
+  // Map each CVE in the cves array to a new Cve instance
+  const cvePromises = cves.map(async (cveData) => {
+    const newCve = new Cve({
+      id: cveData.cve.id,
+      sourceIdentifier: cveData.cve.sourceIdentifier,
+      published: new Date(cveData.cve.published),
+      lastModified: new Date(cveData.cve.lastModified),
+      vulnStatus: cveData.cve.vulnStatus,
+      cveTags: cveData.cve.cveTags || [],
+      descriptions: cveData.cve.descriptions.map((desc) => ({
+        lang: desc.lang,
+        value: desc.value,
+      })),
+      metrics: {
+        cvssMetricV2: cveData.cve.metrics.cvssMetricV2.map((metric) => ({
+          source: metric.source,
+          type: metric.type,
+          cvssData: {
+            version: metric.cvssData.version,
+            vectorString: metric.cvssData.vectorString,
+            baseScore: metric.cvssData.baseScore,
+            accessVector: metric.cvssData.accessVector,
+            accessComplexity: metric.cvssData.accessComplexity,
+            authentication: metric.cvssData.authentication,
+            confidentialityImpact: metric.cvssData.confidentialityImpact,
+            integrityImpact: metric.cvssData.integrityImpact,
+            availabilityImpact: metric.cvssData.availabilityImpact,
+          },
+          baseSeverity: metric.baseSeverity,
+          exploitabilityScore: metric.exploitabilityScore,
+          impactScore: metric.impactScore,
+          acInsufInfo: metric.acInsufInfo,
+          obtainAllPrivilege: metric.obtainAllPrivilege,
+          obtainUserPrivilege: metric.obtainUserPrivilege,
+          obtainOtherPrivilege: metric.obtainOtherPrivilege,
+          userInteractionRequired: metric.userInteractionRequired,
+        })),
+      },
+      weaknesses: cveData.cve.weaknesses.map((weakness) => ({
+        source: weakness.source,
+        type: weakness.type,
+        description: weakness.description.map((desc) => ({
+          lang: desc.lang,
+          value: desc.value,
+        })),
+      })),
+      configurations: cveData.cve.configurations.map((config) => ({
+        nodes: config.nodes.map((node) => ({
+          operator: node.operator,
+          negate: node.negate,
+          cpeMatch: node.cpeMatch.map((cpe) => ({
+            vulnerable: cpe.vulnerable,
+            criteria: cpe.criteria,
+            matchCriteriaId: cpe.matchCriteriaId,
+          })),
+        })),
+      })),
+      references: cveData.cve.references.map((ref) => ({
+        url: ref.url,
+        source: ref.source,
+      })),
+    });
+    console.log("Saving new CVE:", newCve.id);
+    return newCve.save(); // Save each newCve instance
+  });
+
+  // Wait for all promises to resolve
+  await Promise.all(cvePromises);
 }
 
 export { mongoose, connectToDatabase };

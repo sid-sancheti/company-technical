@@ -3,7 +3,6 @@ import mongoosePaginate from "mongoose-paginate-v2";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const mongoose = require("mongoose");
 
 // CVE Schema
 const cvssDataSchema = new mongoose.Schema({
@@ -64,7 +63,7 @@ const referenceSchema = new mongoose.Schema({
 });
 
 const cveSchema = new mongoose.Schema({
-  id: { type: String, required: true },
+  id: { type: String, required: true, unique: true },
   sourceIdentifier: { type: String, required: true },
   published: { type: Date, required: true },
   lastModified: { type: Date, required: true },
