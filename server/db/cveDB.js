@@ -8,21 +8,20 @@ const URI = process.env.ATLAS_URI || "";
 
 async function connectToDatabase() {
   try {
-    await mongoose.connect(
-      URI,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      },
-      "NVD-CVE-Data"
-    );
+    await mongoose.connect(URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("Successfully connected to MongoDB!");
+    console.log(
+      `Connected to database: ${mongoose.connection.db.databaseName}`
+    );
 
     // On startup, update the database with new data. If it is empty, fill it.
     const cveCount = await Cve.countDocuments();
     if (cveCount === 0) {
       await populateDatabase();
-      console.log("Database populated with CVEs!");
+      console.log("Database populated with CVEs! Conatins", cveCount, "CVEs.");
     } else {
       console.log("Database already contains CVEs.");
     }
@@ -32,6 +31,12 @@ async function connectToDatabase() {
   }
 }
 
+/**
+ * Called when the database connects to the MongoDB database.
+ *
+ * Ensures that the database is populated with CVEs from the NVD API.
+ * TODO: Implement a method to update the database with new CVEs.
+ */
 async function populateDatabase() {
   // Get the total number of cves from the NVD API
   let currentCveCount = 0;
@@ -51,6 +56,7 @@ async function populateDatabase() {
 
       if (totalCves === 0) {
         totalCves = response.data.totalResults;
+        console.log(`Total number of CVEs: ${totalCves}`);
       }
 
       currentCveCount += resultsPerCall;
@@ -59,7 +65,6 @@ async function populateDatabase() {
 
       for (const cve of cves) {
         try {
-          console.log(`weaknesses.source: ${cve.cve.weaknesses[0].source}`);
           const newCve = new Cve({
             cveId: cve.cve.id,
             sourceIdentifier: cve.cve.sourceIdentifier,
@@ -70,39 +75,39 @@ async function populateDatabase() {
               lang: desc.lang,
               value: desc.value,
             })),
-            // metrics: {
-            //   cvssMetricV2: cve.cve.metrics.cvssMetricV2.map((metric) => ({
-            //     source: metric.source,
-            //     type: metric.type,
-            // cvssData: {
-            //   version: metric.cvssData.version,
-            //   vectorString: metric.cvssData.vectorString,
-            //   baseScore: metric.cvssData.baseScore,
-            //   accessVector: metric.cvssData.accessVector,
-            //   accessComplexity: metric.cvssData.accessComplexity,
-            //   authentication: metric.cvssData.authentication,
-            //   confidentialityImpact: metric.cvssData.confidentialityImpact,
-            //   integrityImpact: metric.cvssData.integrityImpact,
-            //   availabilityImpact: metric.cvssData.availabilityImpact,
-            // },
-            // baseSeverity: metric.baseSeverity,
-            // exploitabilityScore: metric.exploitabilityScore,
-            // impactScore: metric.impactScore,
-            // acInsufInfo: metric.acInsufInfo,
-            // obtainAllPrivilege: metric.obtainAllPrivilege,
-            // obtainUserPrivilege: metric.obtainUserPrivilege,
-            // obtainOtherPrivilege: metric.obtainOtherPrivilege,
-            // userInteractionRequired: metric.userInteractionRequired,
-            //   })),
-            // },
-            // weaknesses: cve.cve.weaknesses.map(weakness => ({
-            // 	source: weakness.source,
-            // 	type: weakness.type,
-            // description: weakness.description.map(desc => ({
-            // 	lang: desc.lang,
-            // 	value: desc.value,
-            // })),
-            // })),
+            metrics: {
+              cvssMetricV2: cve.cve.metrics.cvssMetricV2.map((metric) => ({
+                source: metric.source,
+                type: metric.type,
+                cvssData: {
+                  version: metric.cvssData.version,
+                  vectorString: metric.cvssData.vectorString,
+                  baseScore: metric.cvssData.baseScore,
+                  accessVector: metric.cvssData.accessVector,
+                  accessComplexity: metric.cvssData.accessComplexity,
+                  authentication: metric.cvssData.authentication,
+                  confidentialityImpact: metric.cvssData.confidentialityImpact,
+                  integrityImpact: metric.cvssData.integrityImpact,
+                  availabilityImpact: metric.cvssData.availabilityImpact,
+                },
+                baseSeverity: metric.baseSeverity,
+                exploitabilityScore: metric.exploitabilityScore,
+                impactScore: metric.impactScore,
+                acInsufInfo: metric.acInsufInfo,
+                obtainAllPrivilege: metric.obtainAllPrivilege,
+                obtainUserPrivilege: metric.obtainUserPrivilege,
+                obtainOtherPrivilege: metric.obtainOtherPrivilege,
+                userInteractionRequired: metric.userInteractionRequired,
+              })),
+            },
+            weaknesses: cve.cve.weaknesses.map((weakness) => ({
+              source: weakness.source,
+              type: weakness.type,
+              description: weakness.description.map((desc) => ({
+                lang: desc.lang,
+                value: desc.value,
+              })),
+            })),
             configurations: cve.cve.configurations.map((config) => ({
               nodes: config.nodes.map((node) => ({
                 operator: node.operator,
