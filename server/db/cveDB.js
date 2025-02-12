@@ -42,7 +42,7 @@ async function populateDatabase() {
   let currentCveCount = 0;
   let totalCves = 0;
   const resultsPerCall = 1000;
-  do {
+  // do {
     try {
       const response = await axios.get(
         "https://services.nvd.nist.gov/rest/json/cves/2.0/",
@@ -61,23 +61,23 @@ async function populateDatabase() {
 
       currentCveCount += resultsPerCall;
       const cves = response.data.vulnerabilities;
-      console.log("Updating the database with new CVEs...");
+      console.log("\nUpdating the database with new CVEs...\nCurrent count:", currentCveCount);
 
       insertCves(cves);
+      await new Promise((resolve) => setTimeout(resolve, 6000));
     } catch (error) {
       console.error("Error fetching or saving CVEs:", error);
     }
 
     // Sleep for 6 seconds to avoid rate limiting
-    await new Promise((resolve) => setTimeout(resolve, 6000));
-  } while (currentCveCount < totalCves);
+  // } while (currentCveCount < totalCves);
 
   console.log("Database updated with new CVEs!");
 }
 
 async function insertCves(cves) {
   // Map each CVE in the cves array to a new Cve instance
-  const cvePromises = cves.map(async (cveData) => {
+  const cvePromises = cves.slice(0, 1000).map(async (cveData) => {
     const newCve = new Cve({
       id: cveData.cve.id,
       sourceIdentifier: cveData.cve.sourceIdentifier,
@@ -139,7 +139,7 @@ async function insertCves(cves) {
       })),
     });
     console.log("Saving new CVE:", newCve.id);
-    return newCve.save(); // Save each newCve instance
+    await newCve.save(); // Save each newCve instance
   });
 
   // Wait for all promises to resolve
