@@ -137,7 +137,6 @@ async function insertCves(cves) {
         console.log("Inserted CVE:", vuln.cve.id);
       } catch (innerError) {
         console.error("Error inserting CVE:", vuln.cve.id, innerError.message);
-        // Consider logging or handling duplicate key errors specifically
       }
     });
 
