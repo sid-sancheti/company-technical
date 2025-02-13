@@ -62,24 +62,23 @@ const referenceSchema = new mongoose.Schema({
   source: { type: String, required: true },
 });
 
+const weaknessesSchema = new mongoose.Schema({
+  source: { type: String, required: true },
+  type: { type: String, required: true },
+  description: [weaknessesDescriptionSchema],
+});
+
 const cveSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  sourceIdentifier: { type: String, required: true },
-  published: { type: Date, required: true },
-  lastModified: { type: Date, required: true },
+  id: { type: String, required: true},
+  published: { type: String, required: true },
+  lastModified: { type: String, required: true },
   vulnStatus: { type: String, required: true },
   cveTags: [String],
   descriptions: [descriptionSchema],
   metrics: {
     cvssMetricV2: [cvssMetricV2Schema],
   },
-  weaknesses: [
-    {
-      source: { type: String, required: true },
-      type: { type: String, required: true },
-      description: [weaknessesDescriptionSchema],
-    },
-  ],
+  weaknesses: [weaknessesSchema],
   configurations: [configurationSchema],
   references: [referenceSchema],
 });
