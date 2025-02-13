@@ -30,7 +30,7 @@ export const getSomeCves = (req, res) => {
       if (!cves) {
         return res.status(404).json({ message: "No CVEs found" });
       }
-      res.json({ cves, totalDocs: cves.length});
+      res.json({ cves });
     })
     .catch((err) => {
       res.status(500).json({ error: err.message });
