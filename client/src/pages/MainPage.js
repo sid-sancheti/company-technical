@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/CVEList.css";
-import Pagination from "../components/Pagination"; // Create a separate Pagination component
-import ResultsPerPageDropdown from "../components/ResultsPerPageDropdown"; // Separate dropdown
-import CveTable from "../components/CveTable"; // Separate table component
+import Pagination from "../components/Pagination";
+import ResultsPerPageDropdown from "../components/ResultsPerPageDropdown";
+import CveTable from "../components/CveTable";
 
-const API_BASE_URL = "/api/cves/"; // Centralize API base URL
+const API_BASE_URL = "/api/cves"; // Centralize API base URL
 
 function MainPage() {
   const [cves, setCves] = useState([]);
@@ -28,14 +28,15 @@ function MainPage() {
       setLoading(true); // Set loading to true before fetching
       setError(null); // Clear any previous errors
 
+      // Ensure that the initial api is /api/cves/
       try {
-        const response = await axios.get(API_BASE_URL, {
+        const response = await axios.get(API_BASE_URL + "/", {
           params: {
             items: resultsPerPage,
             page: currentPage,
           },
         });
-        setCves(response.data.docs);
+        setCves(response.data.cves);
       } catch (err) {
         console.error("Error fetching CVEs:", err.message);
         setError(err.message); // Set the error message
@@ -44,19 +45,22 @@ function MainPage() {
       }
     };
 
-    const fetchTotalCves = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/totalCount`);
-        setTotalCves(response.data.count);
-      } catch (err) {
-        console.error("Error fetching total CVEs:", err.message);
-        setError(err.message); // Set the error message
-      }
-    };
-
     fetchCves();
-    fetchTotalCves();
   }, [resultsPerPage, currentPage]);  // The function will be called every time one of these values changes
+
+  /**
+   * Get the total number of documents in the collection.
+   */
+  const fetchTotalCves = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/totalCount`);
+      setTotalCves(response.data.count);
+    } catch (err) {
+      console.error("Error fetching total CVEs:", err.message);
+      setError(err.message); // Set the error message
+    }
+  };
+  fetchTotalCves();
 
   const handleRowClick = (cveId) => {
     navigate(`/cves/${cveId}`);
