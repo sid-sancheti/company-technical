@@ -26,18 +26,27 @@ function CVEList() {
       try {
         const response = await axios.get("/api/cves/", {
           params: {
-            itmes: resultsPerPage,  // Send resultsPerPage as a query parameter
-            page: currentPage,      // Send currentPage as a query parameter
+            items: resultsPerPage, // Send resultsPerPage as a query parameter
+            page: currentPage, // Send currentPage as a query parameter
           },
         });
         setCves(response.data.docs);
-        setTotalCves(response.data.totalDocs);
-      } catch (error) {
-        console.error("Error fetching CVEs:", error);
+      } catch (err) {
+        console.error("Error fetching CVEs:", err.message);
+      }
+    };
+
+    const totalCves = async () => {
+      try {
+        const response = await axios.get("/api/cves/totalCount");
+        setTotalCves(response.data.count);
+      } catch (err) {
+        console.log("Error fetching total CVEs:", err.message);
       }
     };
 
     fetchCves();
+    totalCves();
   }, [resultsPerPage, currentPage]); // Add resultsPerPage and currentPage to dependency array
 
   // TODO: Setup the connections to the cveId page
@@ -93,15 +102,7 @@ function CVEList() {
           </tr>
         </thead>
         <tbody>
-          {cves.map((cve) => (
-            <tr key={cve.cveId} onClick={() => handleRowClick(cve.cveId)}>
-              <td>{cve.cveId}</td>
-              <td>{cve.sourceIdentifier}</td>
-              <td>{new Date(cve.published).toLocaleDateString()}</td>
-              <td>{new Date(cve.lastModified).toLocaleDateString()}</td>
-              <td>{cve.vulnStatus}</td>
-            </tr>
-          ))}
+          <tr>hello</tr>
         </tbody>
       </table>
 

@@ -45,15 +45,24 @@ async function populateDatabase() {
   do {
     try {
       console.log("Querying the NVD API for new CVEs...");
-      const response = await axios.get(
-        "https://services.nvd.nist.gov/rest/json/cves/2.0/",
-        {
-          params: {
-            resultsPerPage: resultsPerCall,
-            startIndex: currentCveCount,
-          },
+      console.log("Starting index:", currentCveCount);
+
+      // Query the NVD API for new CVEs. If a status 500 is received, try again in 30 seconds.
+      do {
+        const response = await axios.get(
+          "https://services.nvd.nist.gov/rest/json/cves/2.0/",
+          {
+            params: {
+              resultsPerPage: resultsPerCall,
+              startIndex: currentCveCount,
+            },
+          }
+        );
+        if (response.status === 503) {
+          console.log("Received status 503. Retrying in 30 seconds...");
+          await new Promise((resolve) => setTimeout(resolve, 30000));
         }
-      );
+      } while (response.status === 500);
 
       if (totalCves === 0) {
         totalCves = response.data.totalResults;
@@ -80,7 +89,7 @@ async function populateDatabase() {
 
 async function insertCves(cves) {
   try {
-    let cveList = cves.map((vuln) => {
+    let cveList = cves.map(async (vuln) => {
       console.log("CVEId:", vuln.cve.id);
       const newCve = new Cve({
         id: vuln.cve.id,
@@ -97,16 +106,11 @@ async function insertCves(cves) {
         configurations: vuln.cve.configurations,
         references: vuln.cve.references,
       });
+      await newCve.save();
     });
 
-    console.log("Inserting CVEs into the database...");
-    await Cve.insertMany(cveList);
   } catch (err) {
-    // If a duplicate cveId is found, skip
-    if (err.code === 11000) {
-      console.log("Duplicate cveId found. Skipping...");
-    }
-    console.error("Error inserting CVEs into the database:", err);
+    console.error("Error inserting CVEs into the database:", err.message);
   }
 }
 

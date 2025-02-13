@@ -50,7 +50,7 @@ export const getSomeCves = (req, res) => {
 export const getACve = (req, res) => {
   const cveId = req.params.cveId;
 
-  Cve.findOne({ cveId: cveId })
+  Cve.findOne({ id: cveId })
     .exec()
     .then((cve) => {
       if (!cve) {
@@ -82,4 +82,7 @@ export const getTotalCveCount = (req, res) => {
       res.status(500).json({ error: err.message });
     });
 };
+
 //TODO: Implement a method to check for duplicate cveIds and remove one.
+
+
