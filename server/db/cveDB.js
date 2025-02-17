@@ -7,7 +7,7 @@ dotenv.config();
 
 const URI = process.env.ATLAS_URI || "";
 const NVD_API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0/";
-const RESULTS_PER_CALL = 10;
+const RESULTS_PER_CALL = 1000;
 const DELAY_BETWEEN_REQUESTS = 6000; // 6 seconds
 const RETRY_DELAY = 30000; // 30 seconds
 
