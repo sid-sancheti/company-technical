@@ -69,8 +69,7 @@ const weaknessesSchema = new mongoose.Schema({
 });
 
 const cveSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true},
-  sourceIdentifier: { type: String, required: true },
+  id: { type: String, required: true},
   published: { type: String, required: true },
   lastModified: { type: String, required: true },
   vulnStatus: { type: String, required: true },
