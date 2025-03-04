@@ -7,7 +7,7 @@ dotenv.config();
 
 const URI = process.env.ATLAS_URI || "";
 const NVD_API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0/";
-const RESULTS_PER_CALL = 10;
+const RESULTS_PER_CALL = 1000;
 const DELAY_BETWEEN_REQUESTS = 6000; // 6 seconds
 const RETRY_DELAY = 30000; // 30 seconds
 
@@ -89,7 +89,7 @@ async function populateDatabase() {
       console.error("Error in populateDatabase loop:", error);
       break; // Exit the loop on error
     }
-  } while (false) // while (currentCveCount < totalCves);
+  } while (currentCveCount < totalCves);
 
   console.log("Database populated with CVEs!");
 }
@@ -121,7 +121,7 @@ async function updateDatabase() {
       console.error("Error in updateDatabase loop:", error);
       break; // Exit the loop on error
     }
-  } while (false) // while (currentCveCount < totalCves);
+  } while (currentCveCount < totalCves);
 
   console.log("Database update complete.");
 }
@@ -184,7 +184,7 @@ const createCveObject = (vuln) => ({
   cveTags: vuln.cve.cveTags,
   descriptions: vuln.cve.descriptions,
   metrics: {
-    cvssMetricV2: vuln.cve.metrics?.cvssMetricV2,
+    cvssMetricV2: vuln.cve.metrics?.cvssMetricV2 || [], // Handle potential undefined metrics
   },
   weaknesses: vuln.cve.weaknesses,
   configurations: vuln.cve.configurations,
