@@ -30,7 +30,7 @@ function MainPage() {
 
       // Ensure that the initial api is /api/cves/
       try {
-        const response = await axios.get(`${API_BASE_URL}/`, {
+        const response = await axios.get(API_BASE_URL + "/", {
           params: {
             items: resultsPerPage,
             page: currentPage,
